@@ -117,13 +117,13 @@ import UIKit
         
         let data = PieSliceData(model: model, id: index, percentage: percentage)
         let slice = PieSlice(data: data, view: PieSliceLayer(color: model.color, startAngle: lastEndAngle, endAngle: newEndAngle, animDelay: 0, center: bounds.center))
-        
+        let offset = model.offset
         slice.view.frame = bounds
         
         slice.view.sliceData = data
         
         slice.view.innerRadius = innerRadius
-        slice.view.outerRadius = outerRadius
+        slice.view.outerRadius = outerRadius - offset
         slice.view.selectedOffset = selectedOffset
         slice.view.animDuration = animDuration
         slice.view.strokeColor = strokeColor

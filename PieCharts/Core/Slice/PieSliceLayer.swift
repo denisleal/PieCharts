@@ -34,6 +34,7 @@ open class PieSliceLayer: CALayer, CAAnimationDelegate {
     public var innerRadius: CGFloat = 50
     public var outerRadius: CGFloat = 100
     var referenceAngle: CGFloat = CGFloat.pi * 3 / 2 // Top center
+    var offset: CGFloat = 0
     public var selectedOffset: CGFloat = 30
     var animDuration: Double = 0.5
     var strokeColor: UIColor = UIColor.black

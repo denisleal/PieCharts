@@ -48,8 +48,6 @@ open class PieSliceLayer: CALayer, CAAnimationDelegate {
     
     fileprivate(set) var center: CGPoint = CGPoint.zero
     
-    public fileprivate(set) var path: CGPath?
-    
     public var midAngle: CGFloat {
         return internalMidAngle + referenceAngle
     }
@@ -206,14 +204,20 @@ open class PieSliceLayer: CALayer, CAAnimationDelegate {
         ctx.beginPath()
         ctx.move(to: CGPoint(x: center.x, y: center.y))
 
-        let path = createArcPath(center: center)
-        ctx.addPath(path)
-        self.path = path
+        if startAngleManaged == 0 && endAngleManaged == CGFloat.pi * 2 {
+            let path = createOuterPath(center: center)
+            ctx.addPath(path)
+            let path2 = createInnerPath(center: center)
+            ctx.addPath(path2)
+        } else {
+            let path = createArcPath(center: center)
+            ctx.addPath(path)
+        }
         
         ctx.setFillColor(color.cgColor)
         ctx.setStrokeColor(strokeColor.cgColor)
         ctx.setLineWidth(strokeWidth)
-        
+
         ctx.drawPath(using: CGPathDrawingMode.fillStroke)
     }
     
@@ -221,6 +225,20 @@ open class PieSliceLayer: CALayer, CAAnimationDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
+    fileprivate func createInnerPath(center: CGPoint, offsetAngle: CGFloat = 0) -> CGPath {
+        let path = CGMutablePath()
+        path.addRelativeArc(center: center, radius: innerRadius, startAngle: startAngleManaged + offsetAngle, delta: endAngleManaged - startAngleManaged)
+        path.closeSubpath()
+        return path
+    }
+
+    fileprivate func createOuterPath(center: CGPoint, offsetAngle: CGFloat = 0) -> CGPath {
+        let path = CGMutablePath()
+        path.addRelativeArc(center: center, radius: outerRadius, startAngle: endAngleManaged + offsetAngle, delta: -(endAngleManaged - startAngleManaged))
+        path.closeSubpath()
+        return path
+    }
+
     fileprivate func createArcPath(center: CGPoint, offsetAngle: CGFloat = 0) -> CGPath {
         let path = CGMutablePath()
         path.addRelativeArc(center: center, radius: innerRadius, startAngle: startAngleManaged + offsetAngle, delta: endAngleManaged - startAngleManaged)
@@ -228,7 +246,7 @@ open class PieSliceLayer: CALayer, CAAnimationDelegate {
         path.closeSubpath()
         return path
     }
-    
+
     open override func contains(_ p: CGPoint) -> Bool {
         let delta = selected ? {
             let pos = calculatePosition(angle: midAngle, p: position, offset: -selectedOffset)

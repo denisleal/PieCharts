@@ -21,7 +21,7 @@ class ProgrammaticalDemo: UIViewController, PieChartDelegate {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        
+
         chartView.layers = [createCustomViewsLayer(), createTextLayer()]
         chartView.delegate = self
         chartView.models = createModels() // order is important - models have to be set at the end
@@ -37,16 +37,39 @@ class ProgrammaticalDemo: UIViewController, PieChartDelegate {
     
     fileprivate func createModels() -> [PieSliceModel] {
         let alpha: CGFloat = 0.5
-        
+        let pattern = createDottedPattern()
         return [
             PieSliceModel(value: 2.1, color: UIColor.yellow.withAlphaComponent(alpha)),
             PieSliceModel(value: 3, color: UIColor.blue.withAlphaComponent(alpha)),
             PieSliceModel(value: 1, color: UIColor.green.withAlphaComponent(alpha)),
-            PieSliceModel(value: 4, color: UIColor.cyan.withAlphaComponent(alpha)),
+            PieSliceModel(value: 4, color: UIColor.cyan.withAlphaComponent(alpha), pattern: pattern),
             PieSliceModel(value: 2, color: UIColor.red.withAlphaComponent(alpha)),
             PieSliceModel(value: 1.5, color: UIColor.magenta.withAlphaComponent(alpha)),
-            PieSliceModel(value: 0.5, color: UIColor.orange.withAlphaComponent(alpha))
+            PieSliceModel(value: 0.5, color: UIColor.orange.withAlphaComponent(alpha), pattern: pattern)
         ]
+    }
+
+    private func createDottedPattern() -> CGPattern? {
+        let drawPattern: CGPatternDrawPatternCallback = { _, context in
+            context.addArc(
+                center: CGPoint(x: 1, y: 1), radius: 0.5,
+                startAngle: 0, endAngle: CGFloat(2.0 * .pi),
+                clockwise: false)
+            context.setFillColor(UIColor.lightGray.cgColor)
+            context.fillPath()
+        }
+        var callbacks = CGPatternCallbacks(
+            version: 0, drawPattern: drawPattern, releaseInfo: nil)
+        let pattern = CGPattern(
+            info: nil,
+            bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+            matrix: .identity,
+            xStep: 3,
+            yStep: 3,
+            tiling: .constantSpacing,
+            isColored: true,
+            callbacks: &callbacks)
+        return pattern
     }
     
     // MARK: - Layers

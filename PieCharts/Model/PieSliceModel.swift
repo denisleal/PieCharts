@@ -12,12 +12,14 @@ public class PieSliceModel: CustomDebugStringConvertible {
     
     public let value: Double
     public let color: UIColor
+    public let pattern: CGPattern?
     public let offset: CGFloat
     public let obj: Any? /// optional object to pass around e.g. to the layer's text generators
 
-    public init(value: Double, color: UIColor, offset: CGFloat = 0, obj: Any? = nil) {
+    public init(value: Double, color: UIColor, pattern: CGPattern? = nil, offset: CGFloat = 0, obj: Any? = nil) {
         self.value = value
         self.color = color
+        self.pattern = pattern
         self.offset = offset
         self.obj = obj
     }

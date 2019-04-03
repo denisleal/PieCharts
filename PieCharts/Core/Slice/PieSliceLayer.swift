@@ -16,7 +16,13 @@ open class PieSliceLayer: CALayer, CAAnimationDelegate {
             setNeedsDisplay()
         }
     }
-    
+
+    var pattern: CGPattern? {
+        didSet {
+            setNeedsDisplay()
+        }
+    }
+
     fileprivate(set) var startAngle: CGFloat = 0
     fileprivate(set) var endAngle: CGFloat = 0
     
@@ -71,9 +77,10 @@ open class PieSliceLayer: CALayer, CAAnimationDelegate {
         }
     }
     
-    public init(color: UIColor, startAngle: CGFloat, endAngle: CGFloat, animDelay: Double, center: CGPoint) {
+    public init(color: UIColor, pattern: CGPattern? = nil, startAngle: CGFloat, endAngle: CGFloat, animDelay: Double, center: CGPoint) {
         
         self.color = color
+        self.pattern = pattern
         self.startAngle = startAngle
         self.endAngle = endAngle
         
@@ -213,12 +220,20 @@ open class PieSliceLayer: CALayer, CAAnimationDelegate {
             let path = createArcPath(center: center)
             ctx.addPath(path)
         }
-        
-        ctx.setFillColor(color.cgColor)
+
+        if let pattern = self.pattern {
+            let patternSpace = CGColorSpace(patternBaseSpace: nil)!
+            ctx.setFillColorSpace(patternSpace)
+            var alpha : CGFloat = 1.0
+            ctx.setFillPattern(pattern, colorComponents: &alpha)
+        } else {
+            ctx.setFillColor(color.cgColor)
+        }
+
         ctx.setStrokeColor(strokeColor.cgColor)
         ctx.setLineWidth(strokeWidth)
 
-        ctx.drawPath(using: CGPathDrawingMode.fillStroke)
+        ctx.drawPath(using: .fillStroke)
     }
     
     required public init?(coder aDecoder: NSCoder) {

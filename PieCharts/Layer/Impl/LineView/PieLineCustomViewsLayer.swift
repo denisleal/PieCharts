@@ -57,7 +57,6 @@ open class PieLineCustomViewsLayer: PieChartLayer {
         let center = p2 //settings.viewRadius.map{slice.view.midPoint(radius: $0)} ?? slice.view.arcCenter
 
         guard let view = viewGenerator?(slice, center) else {print("Need a view generator to create views!"); return}
-        view.backgroundColor = UIColor.yellow.withAlphaComponent(0.3)
 
         let size = view.frame.size
 
